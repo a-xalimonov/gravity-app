@@ -10,9 +10,9 @@ export class Canvas extends React.Component {
     }
 
     componentDidMount = () => {
+        this.newCanvas.current.width = window.innerWidth - 10
+        this.newCanvas.current.height = window.innerHeight - 10
         const sim = new Simulation(this.newCanvas.current)
-        this.newCanvas.current.width = window.innerWidth - 20
-        this.newCanvas.current.height = window.innerHeight - 20
     }
 
     render() {

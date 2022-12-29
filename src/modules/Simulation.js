@@ -1,19 +1,24 @@
-import { MovingBody, Planet, Star } from "./Entities"
+import { Renderer } from "./Renderer"
+import { Planet, Spaceship, Star } from "./Entities"
 import { Vector2D } from "./Vector2D"
+import { InputHandler } from "./InputHandler"
 
 export class Simulation {
 
     constructor(canvas) {
-        this.canvas = canvas
-
         this.entityList = [
-            new Star("Star", new Vector2D(900, 400), 150, "star.png", 2e18),
-            new Planet("Planet1", new Vector2D(500, 400), 40, "earth.png", 1e17, new Vector2D(0, 600)),
-            new MovingBody("o1", new Vector2D(470, 400), 20, "mercury.png", 1, new Vector2D(0, 1100)),
-            new Planet("Planet2", new Vector2D(1100, 400), 40, "mercury.png", 1e16, new Vector2D(0, -800)),
+            new Star("Sun", new Vector2D(0, 0), 150, 'star', 1.64e17),
+            new Planet("Earth", new Vector2D(-1000, 0), 30, 'earth', 4.93e14, new Vector2D(0, 104.72)),
+            new Planet("Mercury", new Vector2D(-387.7, 0), 15, 'mercury', 1e14, new Vector2D(0, 166.86)),
+            new Planet("Venus", new Vector2D(-721.93, 0), 20, 'venus', 1e14, new Vector2D(0, 123.39)),
+            new Planet("Mars", new Vector2D(-1524.06, 0), 20, 'mars', 1e14, new Vector2D(0, 85.02)),
+            new Spaceship("Player", new Vector2D(-1030, 0), 10, 'shuttle', 1, new Vector2D(0, 135), 200)
         ]
 
-        this.t0 = performance.now()
+        this.renderer = new Renderer(canvas)
+        this.input = new InputHandler(this.renderer, this.entityList[5])
+
+        this.t0 = 0
         window.requestAnimationFrame(this.loop)
     }
 
@@ -24,7 +29,7 @@ export class Simulation {
     }
 
     recalculate = (t) => {
-        const dt = t - this.t0
+        const dt = Math.min(t - this.t0, 17)
         this.t0 = t
 
         this.entityList.forEach(entity => {
@@ -36,13 +41,11 @@ export class Simulation {
     }
 
     redraw = () => {
-        const ctx = this.canvas.getContext("2d")
+        this.renderer.focus = this.entityList[5].position
 
-        ctx.fillStyle = "#000510"
-        ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
-
+        this.renderer.fillBackground()
         this.entityList.forEach(entity => {
-            entity.draw(ctx)
+            entity.draw(this.renderer)
         })
     }
 }

@@ -1,5 +1,11 @@
 export class Vector2D {
 
+    static zero = new Vector2D(0, 0)
+    static up = new Vector2D(0, -1)
+    static down = new Vector2D(0, 1)
+    static left = new Vector2D(-1, 0)
+    static right = new Vector2D(1, 0)
+
     constructor(x, y) {
         this.x = x
         this.y = y
@@ -11,11 +17,12 @@ export class Vector2D {
 
     normalize() {
         const length = this.length()
-        if (!length) {
-            console.log("Length is 0!")
-            return
-        } 
-        return new Vector2D(this.x / length, this.y / length)
+        if (length) {
+            return new Vector2D(this.x / length, this.y / length)
+        }
+        else {
+            return new Vector2D(1, 0)
+        }
     }
 
     static dot(v1, v2) {
