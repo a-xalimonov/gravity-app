@@ -1,46 +1,37 @@
+import { Vector2D } from "./Vector2D";
+
 export class InputHandler {
-    constructor(renderer, player) {
+    constructor(canvas, renderer, player) {
 
         this.renderer = renderer
         this.player = player
         
-        window.addEventListener("wheel", (e) => {
+        canvas.addEventListener("wheel", (e) => {
             this.renderer.scale = Math.max(this.renderer.scale - e.deltaY / 1000, 0.1)
             if (this.renderer.scale <= 0) {
                 this.renderer.scale = 0.1
             }
         });
         window.addEventListener("keydown", (e) => {
-            console.log("Down", e.code)
-            console.log(this.renderer)
             if (e.code === 'KeyV') {
                 this.renderer.showVectors = !this.renderer.showVectors
             }
             if (e.code === 'KeyW') {
-                this.player.thrust_up = this.player.thrust
+                this.player.thrust = true
             }
-            if (e.code === 'KeyS') {
-                this.player.thrust_down = this.player.thrust
+            if (e.code === 'KeyQ') {
+                this.player.angVelocity = 2.3
             }
-            if (e.code === 'KeyA') {
-                this.player.thrust_left = this.player.thrust
-            }
-            if (e.code === 'KeyD') {
-                this.player.thrust_right = this.player.thrust
+            if (e.code === 'KeyE') {
+                this.player.angVelocity = -2.3
             }
         });
         window.addEventListener("keyup", (e) => {
             if (e.code === 'KeyW') {
-                this.player.thrust_up = 0
+                this.player.thrust = false
             }
-            if (e.code === 'KeyS') {
-                this.player.thrust_down = 0
-            }
-            if (e.code === 'KeyA') {
-                this.player.thrust_left = 0
-            }
-            if (e.code === 'KeyD') {
-                this.player.thrust_right = 0
+            if (e.code === 'KeyQ' || e.code === 'KeyE') {
+                this.player.angVelocity = 0
             }
         });
     }
