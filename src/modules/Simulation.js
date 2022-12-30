@@ -12,7 +12,7 @@ export class Simulation {
             new Planet("Mercury", new Vector2D(-387.7, 0), 15, 'mercury', 1e14, new Vector2D(0, 166.86)),
             new Planet("Venus", new Vector2D(-721.93, 0), 20, 'venus', 1e14, new Vector2D(0, 123.39)),
             new Planet("Mars", new Vector2D(-1524.06, 0), 20, 'mars', 1e14, new Vector2D(0, 85.02)),
-            new Spaceship("Player", new Vector2D(-1030, 0), 10, 'shuttle', 1, new Vector2D(0, 135), 200)
+            new Spaceship("Player", new Vector2D(-1030, 0), 10, 'shuttle', 1, new Vector2D(0, 135), 200),
         ]
 
         this.renderer = new Renderer(canvas)

@@ -13,8 +13,6 @@ export class Renderer {
 
     fillBackground = () => {
         const ctx = this.canvas.getContext("2d")
-        // ctx.fillStyle = "#000510"
-        // ctx.fillRect(0, 0, this.width, this.height)
         const image = new Image()
         image.src = require("../images/background.png")
         ctx.drawImage(image, 0, 0)
