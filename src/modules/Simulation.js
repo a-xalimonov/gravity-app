@@ -21,7 +21,7 @@ export class Simulation {
     }
 
     recalculate = (t) => {
-        const dt = Math.min(t - this.t0, 17)
+        const dt = Math.min(t - this.t0, 17) / 1000
         this.t0 = t
 
         this.entityList.forEach(entity => {
@@ -33,7 +33,8 @@ export class Simulation {
     }
 
     redraw = () => {
-        this.renderer.updateCamera(this.entityList[5].position)
+        this.renderer.focus = this.entityList[5]
+        this.renderer.updateCamera()
         this.renderer.fillBackground()
         this.entityList.forEach(entity => {
             entity.draw(this.renderer)

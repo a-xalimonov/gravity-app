@@ -1,5 +1,3 @@
-import { Vector2D } from "./Vector2D";
-
 export class InputHandler {
     constructor(canvas, renderer, player) {
 
@@ -7,10 +5,8 @@ export class InputHandler {
         this.player = player
         
         canvas.addEventListener("wheel", (e) => {
-            this.renderer.scale = Math.max(this.renderer.scale - e.deltaY / 1000, 0.1)
-            if (this.renderer.scale <= 0) {
-                this.renderer.scale = 0.1
-            }
+            this.renderer.scale = Math.max(this.renderer.scale * 1.5 ** (-e.deltaY / 200), 0.005
+            )
         });
         window.addEventListener("keydown", (e) => {
             if (e.code === 'KeyV') {
