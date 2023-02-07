@@ -47,12 +47,10 @@ export class Renderer {
 
     drawSprite = (vector, size, image, rotation) => {
 
-        const half = size / 2
-
         this.ctx.save()
         this.ctx.translate(vector.x, vector.y) // Перенос центра холста для вращения
         this.ctx.rotate(-rotation)
-        this.ctx.drawImage(image, -half, -half, size, size)
+        this.ctx.drawImage(image, -size.x / 2, -size.y / 2, size.x, size.y)
         this.ctx.restore()
     }
 

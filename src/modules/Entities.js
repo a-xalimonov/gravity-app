@@ -10,13 +10,20 @@ export class Entity {
         this.size = params.size
         this.image = new Image()
         this.image.src = require(`../images/${params.imageSrc}.png`)
+        this.velocity = Vector2D.zero
     }
 
     draw(renderer) {
         renderer.drawSprite(this.position, this.size, this.image)
     }
 
-    addForces() {
+    applyForces() {
+    }
+
+    collisionResponse() {
+    }
+
+    accelerate() {
     }
 
     move() {
@@ -40,11 +47,10 @@ export class MovingBody extends PhysicalEntity {
         this.angVelocity = params.angVelocity ? params.angVelocity : 0
     }
 
-    addForces(entityList) {
-        this.forces = new Vector2D(0, 0)
+    applyForces(entityList) {
+        this.forces = Vector2D.zero
         entityList.forEach(entity => {
             if (entity !== this && (entity instanceof Planet || entity instanceof Star)) {
-
                 const r = entity.position.sub(this.position)
                 const F = G * this.mass * entity.mass / r.length() ** 2
                 this.forces = this.forces.sum(r.normalize().mult(F))
@@ -52,9 +58,27 @@ export class MovingBody extends PhysicalEntity {
         })
     }
 
-    move(dt) {
+    collisionResponse(entityList) {
+        this.forces = Vector2D.zero
+        entityList.forEach(entity => {
+            if (entity !== this) {
+                const r = entity.position.sub(this.position)
+                if (r.length() < (this.size.x + entity.size.x) / 2) {
+                    const collision = r.normalize().mult(
+                        -1.5 * 60 * Math.max(0, this.velocity.sub(entity.velocity).dot(r.normalize())) / (1 / this.mass + 1 / entity.mass)
+                    )
+                    this.forces = this.forces.sum(collision)
+                }
+            }
+        })
+    }
+
+    accelerate(dt) {
         const a = this.forces.div(this.mass)
         this.velocity = this.velocity.sum(a.mult(dt))
+    }
+
+    move(dt) {
         this.position = Vector2D.sum(this.position, this.velocity.mult(dt))
         this.angle = (this.angle + this.angVelocity * (dt)) % (2 * Math.PI)
     }
@@ -77,8 +101,8 @@ export class Spaceship extends MovingBody {
         this.trajectory = []
     }
 
-    addForces = (entityList) => {
-        super.addForces(entityList)
+    applyForces = (entityList) => {
+        super.applyForces(entityList)
         if (this.thrust) {
             const orientation = new Vector2D(Math.cos(this.angle), -Math.sin(this.angle))
             this.forces = this.forces.sum(orientation.mult(this.masThrust))
@@ -111,5 +135,5 @@ export class Planet extends MovingBody {
         this.trajectory.push(this.position)
         renderer.drawTrajectory(this.trajectory)
         super.draw(renderer)
-    } 
+    }
 }

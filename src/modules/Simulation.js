@@ -10,6 +10,7 @@ export class Simulation {
         this.renderer = new Renderer(canvas.getContext('2d'), canvas.width, canvas.height)
         this.input = new InputHandler(canvas, this.renderer, this.entityList[5])
 
+        this.renderer.focus = this.entityList[5]
         this.t0 = 0
         window.requestAnimationFrame(this.loop)
     }
@@ -25,7 +26,12 @@ export class Simulation {
         this.t0 = t
 
         this.entityList.forEach(entity => {
-            entity.addForces(this.entityList)
+            entity.applyForces(this.entityList)
+            entity.accelerate(dt)
+        })
+        this.entityList.forEach(entity => {
+            entity.collisionResponse(this.entityList)
+            entity.accelerate(dt)
         })
         this.entityList.forEach(entity => {
             entity.move(dt)
@@ -33,7 +39,6 @@ export class Simulation {
     }
 
     redraw = () => {
-        this.renderer.focus = this.entityList[5]
         this.renderer.updateCamera()
         this.renderer.fillBackground()
         this.entityList.forEach(entity => {
