@@ -1,42 +1,8 @@
-import { G } from "./constants"
-import { Vector2D } from "./Vector2D"
-
-export class Entity {
-
-    constructor(params) {
-
-        this.name = params.name
-        this.position = params.position
-        this.size = params.size
-        this.image = new Image()
-        this.image.src = require(`../images/${params.imageSrc}.png`)
-        this.velocity = Vector2D.zero
-    }
-
-    draw(renderer) {
-        renderer.drawSprite(this.position, this.size, this.image)
-    }
-
-    applyForces() {
-    }
-
-    collisionResponse() {
-    }
-
-    accelerate() {
-    }
-
-    move() {
-    }
-
-}
-export class PhysicalEntity extends Entity {
-
-    constructor(params) {
-        super(params)
-        this.mass = params.mass
-    }
-}
+import { G } from "../constants"
+import { Vector2D } from "../Vector2D"
+import { PhysicalEntity } from "./PhysicalEntity"
+import { Planet } from "./Planet"
+import { Star } from "./Star"
 
 export class MovingBody extends PhysicalEntity {
 
@@ -89,51 +55,5 @@ export class MovingBody extends PhysicalEntity {
             renderer.drawVector(this.position, this.velocity, '#5050ff')
             renderer.drawVector(this.position, this.forces.div(this.mass * 0.3), '#ff5050')
         }
-    }
-}
-
-export class Spaceship extends MovingBody {
-
-    constructor(params) {
-        super(params)
-        this.masThrust = params.maxThrust
-        this.thrust = false
-        this.trajectory = []
-    }
-
-    applyForces = (entityList) => {
-        super.applyForces(entityList)
-        if (this.thrust) {
-            const orientation = new Vector2D(Math.cos(this.angle), -Math.sin(this.angle))
-            this.forces = this.forces.sum(orientation.mult(this.masThrust))
-        }
-    }
-
-    draw = (renderer) => {
-        if (this.thrust) {
-            const orientation = new Vector2D(-Math.cos(this.angle), Math.sin(this.angle)).mult(10)
-            renderer.drawVector(this.position, orientation, '#ede374')
-        }
-        super.draw(renderer)
-    }
-}
-
-export class Star extends PhysicalEntity {
-
-}
-export class Planet extends MovingBody {
-
-    constructor(params) {
-        super(params)
-        this.trajectory = []
-    }
-
-    draw = (renderer) => {
-        if (this.trajectory.length > 500) {
-            this.trajectory.shift()
-        }
-        this.trajectory.push(this.position)
-        renderer.drawTrajectory(this.trajectory)
-        super.draw(renderer)
     }
 }

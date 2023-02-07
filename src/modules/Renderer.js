@@ -1,5 +1,5 @@
 import { Vector2D } from "./Vector2D";
-import { Entity } from "./Entities";
+import { Entity } from "./entities/Entity";
 
 export class Renderer {
 

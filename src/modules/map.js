@@ -1,4 +1,8 @@
-import {Planet, Star, Spaceship, MovingBody} from './Entities'
+import { Star } from "./entities/Star"
+import { Planet } from "./entities/Planet"
+import { Spaceship } from "./entities/Spaceship"
+import { MovingBody } from "./entities/MovingBody"
+
 import { Vector2D } from './Vector2D'
 
 export const map = [
