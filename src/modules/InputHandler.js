@@ -1,33 +1,75 @@
-export class InputHandler {
-    constructor(canvas, renderer, player) {
+import { Vector2D } from "./Vector2D";
 
-        this.renderer = renderer
-        this.player = player
+export class InputHandler {
+    constructor(canvas, simulation) {
+
+        this.sim = simulation
         
         canvas.addEventListener("wheel", (e) => {
-            this.renderer.scale = Math.max(this.renderer.scale * 1.5 ** (-e.deltaY / 200), 0.005
+            this.sim.renderer.scale = Math.max(this.sim.renderer.scale * 1.5 ** (-e.deltaY / 200), 0.005
             )
         });
         window.addEventListener("keydown", (e) => {
+            const playerEntity = this.sim.player.entity
+            if (e.code === 'Escape') {
+                this.sim.pause = !this.sim.pause
+            }
             if (e.code === 'KeyV') {
-                this.renderer.showVectors = !this.renderer.showVectors
+                this.sim.renderer.showVectors = !this.sim.renderer.showVectors
+            }
+            if (e.code === 'KeyT') {
+                this.sim.renderer.showTarget = !this.sim.renderer.showTarget
             }
             if (e.code === 'KeyW') {
-                this.player.thrust = true
+                playerEntity.thrust = true
             }
             if (e.code === 'KeyQ') {
-                this.player.angVelocity = 2.3
+                playerEntity.angVelocity = 2.3
             }
             if (e.code === 'KeyE') {
-                this.player.angVelocity = -2.3
+                playerEntity.angVelocity = -2.3
+            }
+            if (e.code === 'Period') {
+                this.sim.targetIndex = (this.sim.targetIndex + 1) % this.sim.entityList.length
+                this.sim.player.target = this.sim.entityList[this.sim.targetIndex]
+            }
+            if (e.code === 'Comma') {
+                this.sim.targetIndex = (this.sim.entityList.length + this.sim.targetIndex - 1) % this.sim.entityList.length
+                this.sim.player.target = this.sim.entityList[this.sim.targetIndex]
+            }
+            if (e.code.startsWith('Arrow')) {
+                let focusPos
+                if (this.sim.renderer.focus.position) {
+                    focusPos = this.sim.renderer.focus.position
+                }
+                else {
+                    focusPos = this.sim.renderer.focus
+                }
+                const speed = 15 / this.sim.renderer.scale
+                if (e.code.includes('Left')) {
+                    this.sim.renderer.focus = focusPos.sum(Vector2D.left.mult(speed))
+                }
+                if (e.code.includes('Up')) {
+                    this.sim.renderer.focus = focusPos.sum(Vector2D.up.mult(speed))
+                }
+                if (e.code.includes('Right')) {
+                    this.sim.renderer.focus = focusPos.sum(Vector2D.right.mult(speed))
+                }
+                if (e.code.includes('Down')) {
+                    this.sim.renderer.focus = focusPos.sum(Vector2D.down.mult(speed))
+                }
+            }
+            if (e.code === 'Tab') {
+                this.sim.renderer.focus = this.sim.player.entity
             }
         });
         window.addEventListener("keyup", (e) => {
+            const playerEntity = this.sim.player.entity
             if (e.code === 'KeyW') {
-                this.player.thrust = false
+                playerEntity.thrust = false
             }
             if (e.code === 'KeyQ' || e.code === 'KeyE') {
-                this.player.angVelocity = 0
+                playerEntity.angVelocity = 0
             }
         });
     }

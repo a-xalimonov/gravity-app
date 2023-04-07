@@ -1,8 +1,6 @@
 import { G } from "../constants"
 import { Vector2D } from "../Vector2D"
 import { PhysicalEntity } from "./PhysicalEntity"
-import { Planet } from "./Planet"
-import { Star } from "./Star"
 
 export class MovingBody extends PhysicalEntity {
 
@@ -16,7 +14,7 @@ export class MovingBody extends PhysicalEntity {
     applyForces(entityList) {
         this.forces = Vector2D.zero
         entityList.forEach(entity => {
-            if (entity !== this && (entity instanceof Planet || entity instanceof Star)) {
+            if (entity !== this && entity.gravity) {
                 const r = entity.position.sub(this.position)
                 const F = G * this.mass * entity.mass / r.length() ** 2
                 this.forces = this.forces.sum(r.normalize().mult(F))
@@ -50,10 +48,10 @@ export class MovingBody extends PhysicalEntity {
     }
 
     draw(renderer) {
-        renderer.drawSprite(this.position, this.size, this.image, this.angle)
         if (renderer.showVectors) {
             renderer.drawVector(this.position, this.velocity, '#5050ff')
             renderer.drawVector(this.position, this.forces.div(this.mass * 0.3), '#ff5050')
         }
+        renderer.drawSprite(this.position, this.size, this.image, this.angle)
     }
 }
