@@ -54,4 +54,11 @@ export class MovingBody extends PhysicalEntity {
         }
         renderer.drawSprite(this.position, this.size, this.image, this.angle)
     }
+    
+    pack() {
+        const res = super.pack()
+        res.angle = this.angle
+        res.angVelocity = this.angVelocity
+        return res
+    }
 }

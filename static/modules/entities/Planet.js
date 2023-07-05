@@ -8,12 +8,12 @@ export class Planet extends MovingBody {
         this.trajectory = []
     }
 
-    move = (dt) => {
+    move(dt) {
         super.move(dt)
         this.trajectory.push(this.position)
     }
 
-    draw = (renderer) => {
+    draw (renderer) {
         if (this.trajectory.length > 500) {
             this.trajectory.shift()
         }

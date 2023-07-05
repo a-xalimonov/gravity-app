@@ -7,10 +7,9 @@ export class Spaceship extends MovingBody {
         super(params)
         this.masThrust = params.maxThrust
         this.thrust = false
-        this.trajectory = []
     }
 
-    applyForces = (entityList) => {
+    applyForces(entityList) {
         super.applyForces(entityList)
         if (this.thrust) {
             const orientation = new Vector2D(Math.cos(this.angle), -Math.sin(this.angle))
@@ -18,11 +17,23 @@ export class Spaceship extends MovingBody {
         }
     }
 
-    draw = (renderer) => {
+    draw(renderer) {
         if (this.thrust) {
             const orientation = new Vector2D(-Math.cos(this.angle), Math.sin(this.angle)).mult(10)
             renderer.drawVector(this.position, orientation, '#ede374')
         }
         super.draw(renderer)
+    }
+
+    MPSpawn() {
+        const [x, y] = [Math.floor(-1000 + 20 * Math.random()), Math.floor(-1000 + 20 * Math.random())]
+        this.position = new Vector2D(x, y)
+        this.velocity = Vector2D.zero
+    }
+
+    pack() {
+        const res = super.pack()
+        res.thrust = this.thrust
+        return res
     }
 }

@@ -2,22 +2,40 @@ import { Renderer } from "./Renderer"
 import { InputHandler } from "./InputHandler"
 import { map } from "./map"
 import { Player } from "./Player"
+import { MPSession } from "./MPSession"
 
 export class Simulation {
 
-    constructor(canvas) {
+    constructor(mp = false) {
+
         this.entityList = map
-        this.player = new Player(this.getEntityByName('Player'))
-        this.targetIndex = 0
-        this.player.target = map[this.targetIndex]
+        this.player = new Player(this.entityList['player'])
 
-        this.renderer = new Renderer(canvas.getContext('2d'), canvas.width, canvas.height)
+        if (mp) {
+            const mpSession = new MPSession(this.entityList, this.player)
+            mpSession.connect()
+        }
+
+        this.target = 'star'
+        this.renderer = new Renderer()
         this.renderer.focus = this.player.entity
-        this.input = new InputHandler(canvas, this)
-
+        this.input = new InputHandler(this)
         this.pause = false
         this.t0 = 0
+
         window.requestAnimationFrame(this.loop)
+    }
+
+    nextTarget() {
+        const keys = Object.keys(this.entityList)
+        const index = keys.indexOf(this.target)
+        this.target = keys.at((index + 1) % keys.length)
+    }
+
+    previousTarget() {
+        const keys = Object.keys(this.entityList)
+        const index = keys.indexOf(this.target)
+        this.target = keys.at(index - 1)
     }
 
     loop = (t) => {
@@ -44,12 +62,8 @@ export class Simulation {
             entity.draw(this.renderer)
         })
         this.renderer.drawEntityMark(this.player.entity)
-        this.renderer.drawTarget(this.player)
+        this.renderer.drawTarget(this.player, this.entityList[this.target])
 
         this.requestID = window.requestAnimationFrame(this.loop)
-    }
-
-    getEntityByName = (name) => {
-        return this.entityList.find((entity) => entity.name === name)
     }
 }

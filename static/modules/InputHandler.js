@@ -1,10 +1,11 @@
 import { Vector2D } from "./Vector2D";
 
 export class InputHandler {
-    constructor(canvas, simulation) {
+    constructor(simulation) {
 
         this.sim = simulation
         
+        const canvas = document.getElementsByClassName('canvas')[0]
         canvas.addEventListener("wheel", (e) => {
             this.sim.renderer.scale = Math.max(this.sim.renderer.scale * 1.5 ** (-e.deltaY / 200), 0.005
             )
@@ -30,12 +31,10 @@ export class InputHandler {
                 playerEntity.angVelocity = -2.3
             }
             if (e.code === 'Period') {
-                this.sim.targetIndex = (this.sim.targetIndex + 1) % this.sim.entityList.length
-                this.sim.player.target = this.sim.entityList[this.sim.targetIndex]
+                this.sim.nextTarget()
             }
             if (e.code === 'Comma') {
-                this.sim.targetIndex = (this.sim.entityList.length + this.sim.targetIndex - 1) % this.sim.entityList.length
-                this.sim.player.target = this.sim.entityList[this.sim.targetIndex]
+                this.sim.previousTarget()
             }
             if (e.code.startsWith('Arrow')) {
                 let focusPos

@@ -2,10 +2,11 @@ import { Vector2D } from "./Vector2D";
 
 export class Renderer {
 
-    constructor(ctx, width, height) {
-        this.ctx = ctx
-        this.width = width
-        this.height = height
+    constructor() {
+        const canvas = document.getElementsByClassName('canvas')[0]
+        this.ctx = canvas.getContext('2d')
+        this.width = canvas.width
+        this.height = canvas.height
         this.scale = 1
         this.focus = Vector2D.zero
         this.planet = undefined
@@ -13,7 +14,7 @@ export class Renderer {
         this.showVectors = false
         this.showTarget = false
         this.backgorund = new Image()
-        this.backgorund.src = require("../images/background.png")
+        this.backgorund.src = "static/images/background.png"
     }
 
     updateCamera = () => {
@@ -33,7 +34,6 @@ export class Renderer {
     }
 
     drawSprite = (vector, size, image, rotation = 0) => {
-
         this.ctx.save()
         this.ctx.translate(vector.x, vector.y) // Перенос центра холста для вращения
         this.ctx.rotate(-rotation)
@@ -76,17 +76,17 @@ export class Renderer {
         this.ctx.restore()
     }
 
-    drawTarget = (player) => {
-        if (!player.target || !this.showTarget) {
+    drawTarget = (player, target) => {
+        if (!this.showTarget) {
             return
         }
-        let targetVector = player.target.position.sub(player.entity.position)
+        let targetVector = target.position.sub(player.entity.position)
         const dist = targetVector.length()
         const vectorLength = Math.max(0, Math.min(20, Math.sqrt(dist - 100)))
         targetVector = targetVector.normalize()
         this.drawVector(player.entity.position.sum(targetVector.mult(10)), targetVector.mult(vectorLength), '#51a857')
-        this.drawTargetMark(player.target)
-        this.drawTargetInfo(player)
+        this.drawTargetMark(target)
+        this.drawTargetInfo(player, target)
     }
 
     drawTargetMark = (entity) => {
@@ -107,8 +107,8 @@ export class Renderer {
         this.ctx.fillText(entity.name.toUpperCase(), labelPos.x, labelPos.y)
     }
 
-    drawTargetInfo = (player) => {
-        const entity = player.target
+    drawTargetInfo = (player, target) => {
+        const entity = target
         const imagePos = new Vector2D(70, this.height - 70)
         const labelPos = new Vector2D(140, this.height - 130)
         const imgSize = new Vector2D(100, 100)
