@@ -11,7 +11,7 @@ export class Simulation {
         this.targetIndex = 0
         this.player.target = map[this.targetIndex]
 
-        this.renderer = new Renderer(canvas.getContext('2d'), canvas.width, canvas.height)
+        this.renderer = new Renderer(canvas)
         this.renderer.focus = this.player.entity
         this.input = new InputHandler(canvas, this)
 

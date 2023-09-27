@@ -2,7 +2,7 @@ import React from "react"
 import { Simulation } from "../../modules/Simulation"
 import "./Canvas.css"
 
-export class Canvas extends React.Component {
+export default class Canvas extends React.Component {
 
     constructor(props) {
         super(props)
@@ -10,8 +10,8 @@ export class Canvas extends React.Component {
     }
 
     componentDidMount = () => {
-        this.newCanvas.current.width = window.innerWidth - 10
-        this.newCanvas.current.height = window.innerHeight - 10
+        this.newCanvas.current.width = window.innerWidth
+        this.newCanvas.current.height = window.innerHeight
         const sim = new Simulation(this.newCanvas.current)
     }
 

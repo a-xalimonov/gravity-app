@@ -1,0 +1,12 @@
+.controls-window {
+    position: absolute;
+    width: 500px;
+    background-color: #0000009a;
+    border: solid 2px;
+    border-color: #51a857;
+    border-radius: 10px;
+    
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}   

@@ -2,10 +2,10 @@ import { Vector2D } from "./Vector2D";
 
 export class Renderer {
 
-    constructor(ctx, width, height) {
-        this.ctx = ctx
-        this.width = width
-        this.height = height
+    constructor(canvas) {
+        this.ctx = canvas.getContext('2d')
+        this.width = canvas.width
+        this.height = canvas.height
         this.scale = 1
         this.focus = Vector2D.zero
         this.planet = undefined
@@ -14,6 +14,13 @@ export class Renderer {
         this.showTarget = false
         this.backgorund = new Image()
         this.backgorund.src = require("../images/background.png")
+
+        window.addEventListener("resize", (event) => {
+            this.width = window.innerWidth
+            this.height = window.innerHeight
+            canvas.width = window.innerWidth
+            canvas.height = window.innerHeight
+        });
     }
 
     updateCamera = () => {
