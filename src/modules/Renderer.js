@@ -1,30 +1,31 @@
-import { Vector2D } from "./Vector2D";
+import { Vector2D } from "./Vector2D"
 
 export class Renderer {
-
-    constructor(canvas) {
-        this.ctx = canvas.getContext('2d')
-        this.width = canvas.width
-        this.height = canvas.height
+    constructor(_canvas) {
+        this.canvas = _canvas
+        this.ctx = this.canvas.getContext("2d", { alpha: false })
+        this.width = this.canvas.width
+        this.height = this.canvas.height
         this.scale = 1
         this.focus = Vector2D.zero
         this.planet = undefined
 
         this.showVectors = false
         this.showTarget = false
-        this.backgorund = new Image()
-        this.backgorund.src = require("../images/background.png")
+        this.backgorund = getBackgroundCanvas()
 
         window.addEventListener("resize", (event) => {
             this.width = window.innerWidth
             this.height = window.innerHeight
-            canvas.width = window.innerWidth
-            canvas.height = window.innerHeight
-        });
+            this.canvas.width = window.innerWidth
+            this.canvas.height = window.innerHeight
+        })
     }
 
-    updateCamera = () => {
-        const focusVector = this.focus.position ? this.focus.position : this.focus
+    updateCamera() {
+        const focusVector = this.focus.position
+            ? this.focus.position
+            : this.focus
         this.ctx.resetTransform()
         this.ctx.translate(this.width / 2, this.height / 2)
         this.ctx.scale(this.scale, this.scale)
@@ -32,15 +33,15 @@ export class Renderer {
         this.ctx.translate(-focusVector.x, -focusVector.y)
     }
 
-    fillBackground = () => {
+    fillBackground() {
         this.ctx.save()
         this.ctx.resetTransform()
+        this.ctx.clearRect(0, 0, this.width, this.height)
         this.ctx.drawImage(this.backgorund, 0, 0)
         this.ctx.restore()
     }
 
-    drawSprite = (vector, size, image, rotation = 0) => {
-
+    drawSprite(vector, size, image, rotation = 0) {
         this.ctx.save()
         this.ctx.translate(vector.x, vector.y) // Перенос центра холста для вращения
         this.ctx.rotate(-rotation)
@@ -48,7 +49,7 @@ export class Renderer {
         this.ctx.restore()
     }
 
-    drawVector = (position, vector, color = '#aaaaaa') => {
+    drawVector(position, vector, color = "#aaaaaa") {
         const end = position.sum(vector)
         this.ctx.strokeStyle = color
         this.ctx.lineWidth = 1
@@ -59,7 +60,7 @@ export class Renderer {
         this.ctx.stroke()
     }
 
-    drawEntityMark = (entity) => {
+    drawEntityMark(entity) {
         if (this.scale > 0.6) {
             return
         }
@@ -71,11 +72,11 @@ export class Renderer {
         this.ctx.translate(pos.x, pos.y) // Перенос центра холста для вращения
         this.ctx.rotate(0)
 
-        this.ctx.strokeStyle = '#51a857'
+        this.ctx.strokeStyle = "#51a857"
         this.ctx.lineWidth = 2 / this.scale
         this.ctx.beginPath()
         this.ctx.moveTo(0, offset)
-        this.ctx.lineTo(- height, offset - height)
+        this.ctx.lineTo(-height, offset - height)
         this.ctx.lineTo(height, offset - height)
         this.ctx.closePath()
         this.ctx.stroke()
@@ -83,7 +84,7 @@ export class Renderer {
         this.ctx.restore()
     }
 
-    drawTarget = (player) => {
+    drawTarget(player) {
         if (!player.target || !this.showTarget) {
             return
         }
@@ -91,16 +92,23 @@ export class Renderer {
         const dist = targetVector.length()
         const vectorLength = Math.max(0, Math.min(20, Math.sqrt(dist - 100)))
         targetVector = targetVector.normalize()
-        this.drawVector(player.entity.position.sum(targetVector.mult(10)), targetVector.mult(vectorLength), '#51a857')
+        this.drawVector(
+            player.entity.position.sum(targetVector.mult(10)),
+            targetVector.mult(vectorLength),
+            "#51a857"
+        )
         this.drawTargetMark(player.target)
         this.drawTargetInfo(player)
     }
 
-    drawTargetMark = (entity) => {
+    drawTargetMark(entity) {
         const radius = Math.max(entity.size.length() / 2, 20 / this.scale)
         const center = entity.position
-        const labelPos = new Vector2D(center.x, center.y - radius - 10 / this.scale)
-        const color = '#51a857'
+        const labelPos = new Vector2D(
+            center.x,
+            center.y - radius - 10 / this.scale
+        )
+        const color = "#51a857"
 
         this.ctx.strokeStyle = color
         this.ctx.lineWidth = 1.5 / this.scale
@@ -110,11 +118,11 @@ export class Renderer {
 
         this.ctx.fillStyle = color
         this.ctx.font = `${15 / this.scale}px arial`
-        this.ctx.textAlign = 'center'
+        this.ctx.textAlign = "center"
         this.ctx.fillText(entity.name.toUpperCase(), labelPos.x, labelPos.y)
     }
 
-    drawTargetInfo = (player) => {
+    drawTargetInfo(player) {
         const entity = player.target
         const imagePos = new Vector2D(70, this.height - 70)
         const labelPos = new Vector2D(140, this.height - 130)
@@ -125,27 +133,47 @@ export class Renderer {
             `SPEED: ${entity.velocity.length()}km/s`,
             `HEIGHT: ${entity.size.x}km`,
             `WIDTH: ${entity.size.y}km`,
-            `DIST: ${player.entity.position.sub(entity.position).length()}km`]
+            `DIST: ${player.entity.position.sub(entity.position).length()}km`,
+        ]
 
         this.ctx.save()
         this.ctx.resetTransform()
         this.drawSprite(imagePos, imgSize, entity.image)
-        this.ctx.fillStyle = '#51a857'
+        this.ctx.fillStyle = "#51a857"
         this.ctx.font = `${20}px arial`
-        this.ctx.textAlign = 'left'
+        this.ctx.textAlign = "left"
         for (let i = 0; i < text.length; i++) {
             this.ctx.fillText(text[i], labelPos.x, labelPos.y + i * 22)
         }
         this.ctx.restore()
     }
 
-    drawTrajectory = (trajectory) => {
+    drawTrajectory(trajectory) {
         this.ctx.lineWidth = 1 / this.scale
         this.ctx.beginPath()
         trajectory.forEach((point) => {
             this.ctx.lineTo(point.x, point.y)
-        });
-        this.ctx.strokeStyle = '#505050'
+        })
+        this.ctx.strokeStyle = "#505050"
         this.ctx.stroke()
     }
+}
+
+function getBackgroundCanvas() {
+    const image = new Image()
+    image.src = require("../images/background.png")
+    const canvas = document.createElement("canvas")
+    canvas.width = window.screen.availWidth
+    canvas.height = window.screen.availHeight
+    const ctx = canvas.getContext("2d", { alpha: false })
+    image.onload = function () {
+        const X = Math.ceil(canvas.width / this.width)
+        const Y = Math.ceil(canvas.height / this.height)
+        for (let i = 0; i < Y; i++) {
+            for (let j = 0; j < X; j++) {
+                ctx.drawImage(image, j * this.width, i * this.height)
+            }
+        }
+    }
+    return canvas
 }
